@@ -1,4 +1,5 @@
-import { VesselCoordinate } from "@/app";
+
+import { VesselCoordinate } from "@/shared/types";
 import { StyleSheet, Text, View } from "react-native";
 
 type VesselCoordinateDisplayProps = {
@@ -8,10 +9,10 @@ type VesselCoordinateDisplayProps = {
 export const VesselCoordinateDisplay = ({currentShipCoordinate}: VesselCoordinateDisplayProps) => (
      <View style={styles.coordinates}>
         <Text style={styles.coordinatesText}>
-            Lat: {currentShipCoordinate.latitude.toFixed(4)} | Lon: {currentShipCoordinate.longitude.toFixed(4)} | Heading: {currentShipCoordinate.heading}
+           MMSI: {currentShipCoordinate.mmsi} | Lat: {currentShipCoordinate.latitude.toFixed(4)} | Lon: {currentShipCoordinate.longitude.toFixed(4)}
         </Text>
         <Text style={styles.coordinatesText}>
-            Speed: {currentShipCoordinate.sog} | COG: {currentShipCoordinate.cog}
+            Speed: {currentShipCoordinate.sog} | COG: {currentShipCoordinate.cog} | Heading: {currentShipCoordinate.heading}
         </Text>
         </View>
 );

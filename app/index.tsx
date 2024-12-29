@@ -1,24 +1,15 @@
-import {StyleSheet, SafeAreaView, View, TouchableOpacity, Text, Image } from 'react-native';
+import {StyleSheet, SafeAreaView, View, TouchableOpacity, Text } from 'react-native';
+import { feature } from '@turf/helpers';
 import MapLibreGL from '@maplibre/maplibre-react-native';
-import { feature, featureCollection } from '@turf/helpers';
 import { OnPressEvent } from '@maplibre/maplibre-react-native/lib/typescript/commonjs/src/types/OnPressEvent';
-import { useMemo, useRef, useState } from 'react';
 import { RegionPayload } from '@maplibre/maplibre-react-native/lib/typescript/commonjs/src/components/MapView';
+import { useMemo, useRef, useState } from 'react';
 import { Legend } from '@/components/Legend';
 import { VesselCoordinateDisplay } from '@/components/VesselCoordinateDisplay';
+import { useWebSocket } from '@/hooks/useWebSocket';
+import { VesselCoordinate } from '@/shared/types';
 
 MapLibreGL.setAccessToken(null);
-
-
-export type Coordinate = {
-  latitude: number;
-  longitude: number;
-}
-export type VesselCoordinate = Coordinate & {
-  heading: number; // Vessel heading
-  cog: number; // Course over ground
-  sog: number; // Speed over ground
-}
 
 const iconStyles = {
   shipIcon: {
@@ -42,19 +33,6 @@ const iconStyles = {
   },
 };
 
-const ws = new WebSocket('ws://localhost:5020');
-ws.onopen = () => {
-  console.log('WebSocket connection established');
-};
-
-ws.onerror = (error) => {
-  console.error('WebSocket Error:', error);
-};
-
-ws.onclose = () => {
-  console.log('WebSocket connection closed');
-};
-
 
 
 export default function HomeScreen() {
@@ -63,6 +41,7 @@ export default function HomeScreen() {
   const [centerCoordinate, setCenterCoordinate] = useState([10.682710117065172, 59.87794647287211]);
   const [currentShipCoordinate, setCurrentShipCoordinate] = useState<VesselCoordinate | null>(null);
   const [shipCoordinates, setShipCoordinates] = useState<VesselCoordinate[]>([]);
+  const { vesselCoordinateData, sendMessage } = useWebSocket('ws://localhost:5020');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const mapRef = useRef<MapLibreGL.MapViewRef | null>(null);
 
@@ -78,22 +57,24 @@ export default function HomeScreen() {
         heading: coord.heading,
         speed: coord.sog,
         cog: coord.cog,
+        mmsi: coord.mmsi
       },
     })),
   }), [shipCoordinates]);
 
-  ws.onmessage = (event) => {
-    const vessels = JSON.parse(event.data);
-    setShipCoordinates(vessels.map(({ mmsi, lon, lat, cog, sog, heading }: any) => {
+  useMemo(() => {
+    setShipCoordinates(vesselCoordinateData.map(({ mmsi, lon, lat, cog, sog, heading }: any) => {
         return {
+          mmsi,
           latitude: lat,
           longitude: lon,
           cog, 
           sog,
           heading
         }
-    }))
-  };
+    }));
+  }, [vesselCoordinateData]);
+
   const handleRegionChange = async (region: GeoJSON.Feature<GeoJSON.Point, RegionPayload>) => {
       const [longitude, latitude] = region.geometry.coordinates;
       const bounds = await mapRef.current?.getVisibleBounds();
@@ -103,7 +84,7 @@ export default function HomeScreen() {
       }
        timeoutRef.current = setTimeout(() =>  {
         setCenterCoordinate([longitude, latitude]);
-        ws.send(JSON.stringify({
+        sendMessage(JSON.stringify({
             bounds: {
                 minLatitude: bounds?.[0]?.[0],
                 minLongitude: bounds?.[0]?.[1],
@@ -120,6 +101,7 @@ export default function HomeScreen() {
 
   const onSourceLayerPress = ({ features, coordinates }: OnPressEvent) => {
     setCurrentShipCoordinate({
+      mmsi: features[0].properties?.mmsi,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
       sog: features[0].properties?.speed,
@@ -185,7 +167,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
       <Legend />
-      {currentShipCoordinate && <VesselCoordinateDisplay currentShipCoordinate={currentShipCoordinate} />}
+      {currentShipCoordinate && zoomLevel >= 12 && <VesselCoordinateDisplay currentShipCoordinate={currentShipCoordinate} />}
       </SafeAreaView>
   );
 }
