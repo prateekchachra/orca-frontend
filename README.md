@@ -1,11 +1,39 @@
-# Welcome to your Expo app 👋
+# Orca Challenge - Vessel Tracking Application - Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app). This is a real-time vessel tracking application that displays ship positions, course, speed, and heading on an interactive map. The application uses MapLibreGL for rendering maps and WebSockets for receiving real-time vessel data.
+
+## Features
+- Real-Time Vessel Data: Displays vessels' position, speed, course, and heading as they move.
+- Interactive Map: Users can interact with the map to zoom, pan, and view vessel data.
+- WebSocket Integration: Fetches real-time vessel data using WebSocket.
+- Dynamic Vessel Markers: Vessels are displayed on the map with custom icons, and their headings are represented by arrows.
+- Zoom and Pan: Supports zooming and panning to focus on different regions.
+
+## Tech Stack
+- Frontend: React Native with MapLibreGL for interactive maps
+- Backend: Node.js with WebSocket server and PostgreSQL database
+- Database: PostgreSQL for storing vessel data and locations
+- WebSocket: Real-time communication for sending and receiving vessel data
 
 ## Get started
 
-1. Install dependencies
+### Prerequisites
 
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- React Native development environment with Expo
+
+### Installation
+
+For installing the backend please follow the instructions given in the  [Orca backend repository](https://github.com/prateekchachra/orca-backend/README.md)
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/prateekchachra/orca-frontend.git
+   cd orca-frontend
+   ```
+2. Install dependencies
+   
    ```bash
    npm install
    ```
@@ -23,28 +51,14 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Usage
 
-## Get a fresh project
+1. The app will connect to the backend WebSocket server and start receiving real-time vessel data.
+2. Vessels will be displayed on the map with their MMSI (ID of the ship), current position (Latitude and Longitude), course over ground (COG), speed over ground (SOG), and heading.
+3. You can zoom in and out of the map and move the map around to focus on specific regions.
+4. Clicking on a vessel will display additional information, such as its current speed, course, and heading.
 
-When you're ready, run:
+## Acknowledgments
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- MapLibreGL: For providing the open-source mapping library.
+- AIS Stream: For providing real-time vessel data.
