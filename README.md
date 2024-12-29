@@ -2,6 +2,12 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app). This is a real-time vessel tracking application that displays ship positions, course, speed, and heading on an interactive map. The application uses MapLibreGL for rendering maps and WebSockets for receiving real-time vessel data.
 
+
+
+https://github.com/user-attachments/assets/2e984ec3-c9b5-423a-b8fe-719863e222c2
+
+
+
 ## Features
 - Real-Time Vessel Data: Displays vessels' position, speed, course, and heading as they move.
 - Interactive Map: Users can interact with the map to zoom, pan, and view vessel data.
