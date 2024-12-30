@@ -9,7 +9,7 @@ import { feature } from "@turf/helpers";
 import MapLibreGL from "@maplibre/maplibre-react-native";
 import { OnPressEvent } from "@maplibre/maplibre-react-native/lib/typescript/commonjs/src/types/OnPressEvent";
 import { RegionPayload } from "@maplibre/maplibre-react-native/lib/typescript/commonjs/src/components/MapView";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Legend } from "@/components/Legend";
 import { VesselCoordinateDisplay } from "@/components/VesselCoordinateDisplay";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -75,7 +75,26 @@ export default function HomeScreen() {
     [shipCoordinates],
   );
 
-  useMemo(() => {
+  useEffect(() => {
+    const wsInterval = setInterval(async () => {
+      const bounds = await mapRef.current?.getVisibleBounds();
+      if(bounds){
+        sendMessage(
+          JSON.stringify({
+            bounds: {
+              minLatitude: bounds?.[0]?.[0],
+              minLongitude: bounds?.[0]?.[1],
+              maxLatitude: bounds?.[1]?.[0],
+              maxLongitude: bounds?.[1]?.[1],
+            },
+            zoom: zoomLevel,
+          }),
+        );
+      }
+    }, 2000);
+    return () => clearInterval(wsInterval);
+  }, [])
+  useEffect(() => {
     setShipCoordinates(
       vesselCoordinateData.map(({ mmsi, lon, lat, cog, sog, heading }: any) => {
         return {
